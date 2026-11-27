@@ -138,6 +138,11 @@ textarea{min-height:200px;resize:vertical;line-height:1.65}
 @media (prefers-reduced-motion:reduce){*{transition-duration:.01s!important;animation:none!important}}
 
 [hidden]{display:none!important}
+#fx{position:fixed;inset:0;width:100%;height:100%;z-index:3;pointer-events:none}
+.fxbtn{position:fixed;z-index:44;right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 84px);width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(8,8,8,.88);border:1px solid #3a1519;color:#ff9aa2;box-shadow:0 4px 18px rgba(0,0,0,.6);transition:opacity .3s,color .2s}
+.fxbtn.off{color:#6d6462;opacity:.75}
+.fxbtn.hide{opacity:0;pointer-events:none}
+.fxbtn:hover{border-color:#7a1720}
 .chk{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13.5px;color:#cfc5c2;cursor:pointer}
 .chk input{width:18px;height:18px;accent-color:#c1121f;flex:none}
 .appbtn{position:fixed;z-index:44;right:14px;top:calc(env(safe-area-inset-top,0px) + 62px);display:flex;flex-direction:column;align-items:center;gap:6px;width:76px;transition:opacity .3s,transform .3s}
@@ -185,11 +190,13 @@ textarea{min-height:200px;resize:vertical;line-height:1.65}
 <body>
 
 <canvas id="map" aria-label="이면기담 裏面奇談 지도"></canvas>
+<canvas id="fx" aria-hidden="true"></canvas>
 <div class="vignette"></div>
 <div class="brand" id="brand"><b>裏面奇談</b><span data-i18n="brandSub"></span></div>
 <button class="langbtn" id="langBtn" type="button"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/></svg><span id="langLbl"></span></button>
 <button class="adminTag" id="adminTag" type="button" hidden></button>
 <button class="appbtn" id="appBtn" type="button"><span class="appico"><svg viewBox="0 0 52 52" aria-hidden="true"><defs><radialGradient id="aiBg" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#3b0a12"/><stop offset="1" stop-color="#050001"/></radialGradient><radialGradient id="aiDrop" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#ff5a64"/><stop offset=".55" stop-color="#c1121f"/><stop offset="1" stop-color="#58020b"/></radialGradient></defs><circle cx="26" cy="26" r="24.5" fill="url(#aiBg)" stroke="#7a1720" stroke-width="1.5"/><path d="M7 27c5.5-8.5 12-12.5 19-12.5S39.5 18.5 45 27c-5.5 8.5-12 12.5-19 12.5S12.5 35.5 7 27z" fill="#0a0203" stroke="#e8dcd9" stroke-width="1.6" stroke-linejoin="round"/><path d="M26 17.5c2.9 3.9 5.6 6.6 5.6 9.8a5.6 5.6 0 0 1-11.2 0c0-3.2 2.7-5.9 5.6-9.8z" fill="url(#aiDrop)"/><ellipse cx="23.6" cy="26.2" rx="1.2" ry="2" transform="rotate(20 23.6 26.2)" fill="#fff" opacity=".55"/><path d="M26 7.5v3.2M15.5 10.5l1.6 2.7M36.5 10.5l-1.6 2.7" stroke="#a31b27" stroke-width="1.6" stroke-linecap="round"/><path d="M13 42.5c4 1.6 8.5 2.4 13 2.4s9-.8 13-2.4" stroke="#7a1720" stroke-width="1.2" stroke-linecap="round" opacity=".7" fill="none"/></svg></span><span class="applbl" data-i18n="appName"></span></button>
+<button class="fxbtn" id="fxBtn" type="button" aria-pressed="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 15.5a4.5 4.5 0 0 1-.4-8.98A6 6 0 0 1 18 8a3.8 3.8 0 0 1-.5 7.5H7z"/><path d="M8 18.5l-1 2.5M12.5 18.5l-1 2.5M17 18.5l-1 2.5"/></svg></button>
 <div class="hint" id="hint" data-i18n="hint"></div>
 <div class="tip" id="tip"></div>
 
@@ -280,7 +287,7 @@ ko:{
  anon:'익명',
  adminMode:'관리자 모드',purge:'샘플 글 모두 삭제',purgeSure:'한 번 더 누르면 샘플 글이 모두 삭제됩니다',
  purgeDone:function(n){return '샘플 글 '+n+'편을 삭제했습니다'},
- langAria:'언어 변경',adminPrompt:'관리자 비밀번호를 입력하세요',adminWrong:'비밀번호가 맞지 않습니다',gtOpen:'Google 번역으로 열기',appName:'어둠 유형 검사',appFail:'프로그램을 열지 못했습니다.',serverErr:'서버에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.',loginTitle:'관리자 로그인',email:'이메일',fPwShort:'비밀번호',loginBtn:'로그인',loginFail:'로그인하지 못했습니다. 이메일과 비밀번호를 확인해 주세요.',notAdmin:'관리자 권한이 없습니다.',logout:'로그아웃',trEdit:'번역 수정',trSave:'저장',trSaved:'번역을 저장했습니다',postFail:'등록하지 못했습니다. 잠시 후 다시 시도해 주세요.',fPw:'삭제 비밀번호',phPw:'글을 지울 때 필요합니다 (4자 이상)',pwNote:'로그인 없이, 이 비밀번호로 본인 글을 삭제할 수 있습니다. 잊으면 복구할 수 없으니 기억해 두세요.',errPw:'삭제 비밀번호를 4자 이상 입력해 주세요.',cPwPh:'비밀번호',errCmPw:'댓글 비밀번호를 4자 이상 입력해 주세요.',delPwPh:'작성할 때 정한 비밀번호',delGo:'삭제',delCancel:'취소',pwWrong:'비밀번호가 맞지 않습니다',pwLocked:'여러 번 틀렸습니다. 30초 뒤에 다시 시도해 주세요.',trAuto:'자동 번역입니다. 원문과 뉘앙스가 다를 수 있습니다.',trRetry:'다시 번역',
+ langAria:'언어 변경',adminPrompt:'관리자 비밀번호를 입력하세요',adminWrong:'비밀번호가 맞지 않습니다',gtOpen:'Google 번역으로 열기',fxName:'비바람 효과',appName:'어둠 유형 검사',appFail:'프로그램을 열지 못했습니다.',serverErr:'서버에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.',loginTitle:'관리자 로그인',email:'이메일',fPwShort:'비밀번호',loginBtn:'로그인',loginFail:'로그인하지 못했습니다. 이메일과 비밀번호를 확인해 주세요.',notAdmin:'관리자 권한이 없습니다.',logout:'로그아웃',trEdit:'번역 수정',trSave:'저장',trSaved:'번역을 저장했습니다',postFail:'등록하지 못했습니다. 잠시 후 다시 시도해 주세요.',fPw:'삭제 비밀번호',phPw:'글을 지울 때 필요합니다 (4자 이상)',pwNote:'로그인 없이, 이 비밀번호로 본인 글을 삭제할 수 있습니다. 잊으면 복구할 수 없으니 기억해 두세요.',errPw:'삭제 비밀번호를 4자 이상 입력해 주세요.',cPwPh:'비밀번호',errCmPw:'댓글 비밀번호를 4자 이상 입력해 주세요.',delPwPh:'작성할 때 정한 비밀번호',delGo:'삭제',delCancel:'취소',pwWrong:'비밀번호가 맞지 않습니다',pwLocked:'여러 번 틀렸습니다. 30초 뒤에 다시 시도해 주세요.',trAuto:'자동 번역입니다. 원문과 뉘앙스가 다를 수 있습니다.',trRetry:'다시 번역',
  agoNow:'방금 전',agoMin:function(n){return n+'분 전'},agoHour:function(n){return n+'시간 전'},agoDay:function(n){return n+'일 전'}
 },
 ja:{
@@ -309,7 +316,7 @@ ja:{
  anon:'匿名',
  adminMode:'管理者モード',purge:'サンプル投稿をすべて削除',purgeSure:'もう一度押すとサンプル投稿がすべて削除されます',
  purgeDone:function(n){return 'サンプル投稿'+n+'件を削除しました'},
- langAria:'言語切替',adminPrompt:'管理者パスワードを入力してください',adminWrong:'パスワードが違います',gtOpen:'Google翻訳で開く',appName:'闇タイプ検査',appFail:'プログラムを開けませんでした。',serverErr:'サーバーに接続できませんでした。しばらくしてからもう一度お試しください。',loginTitle:'管理者ログイン',email:'メールアドレス',fPwShort:'パスワード',loginBtn:'ログイン',loginFail:'ログインできませんでした。メールアドレスとパスワードを確認してください。',notAdmin:'管理者権限がありません。',logout:'ログアウト',trEdit:'翻訳を編集',trSave:'保存',trSaved:'翻訳を保存しました',postFail:'投稿できませんでした。しばらくしてからもう一度お試しください。',fPw:'削除パスワード',phPw:'投稿を削除するときに必要です(4文字以上)',pwNote:'ログインなしで、このパスワードで自分の投稿を削除できます。忘れると復元できないので覚えておいてください。',errPw:'削除パスワードを4文字以上入力してください。',cPwPh:'パスワード',errCmPw:'コメントのパスワードを4文字以上入力してください。',delPwPh:'投稿時に決めたパスワード',delGo:'削除',delCancel:'キャンセル',pwWrong:'パスワードが違います',pwLocked:'何度も間違えました。30秒後にもう一度お試しください。',trAuto:'自動翻訳です。原文とニュアンスが異なる場合があります。',trRetry:'再翻訳',
+ langAria:'言語切替',adminPrompt:'管理者パスワードを入力してください',adminWrong:'パスワードが違います',gtOpen:'Google翻訳で開く',fxName:'雨風エフェクト',appName:'闇タイプ検査',appFail:'プログラムを開けませんでした。',serverErr:'サーバーに接続できませんでした。しばらくしてからもう一度お試しください。',loginTitle:'管理者ログイン',email:'メールアドレス',fPwShort:'パスワード',loginBtn:'ログイン',loginFail:'ログインできませんでした。メールアドレスとパスワードを確認してください。',notAdmin:'管理者権限がありません。',logout:'ログアウト',trEdit:'翻訳を編集',trSave:'保存',trSaved:'翻訳を保存しました',postFail:'投稿できませんでした。しばらくしてからもう一度お試しください。',fPw:'削除パスワード',phPw:'投稿を削除するときに必要です(4文字以上)',pwNote:'ログインなしで、このパスワードで自分の投稿を削除できます。忘れると復元できないので覚えておいてください。',errPw:'削除パスワードを4文字以上入力してください。',cPwPh:'パスワード',errCmPw:'コメントのパスワードを4文字以上入力してください。',delPwPh:'投稿時に決めたパスワード',delGo:'削除',delCancel:'キャンセル',pwWrong:'パスワードが違います',pwLocked:'何度も間違えました。30秒後にもう一度お試しください。',trAuto:'自動翻訳です。原文とニュアンスが異なる場合があります。',trRetry:'再翻訳',
  agoNow:'たった今',agoMin:function(n){return n+'分前'},agoHour:function(n){return n+'時間前'},agoDay:function(n){return n+'日前'}
 }};
 function tt(k,a){var v=T[lang][k];return typeof v==='function'?v(a):v}
@@ -882,6 +889,7 @@ function show(v){
   navBtns.forEach(function(b){b.classList.toggle('on',b.dataset.view===v)});
   $('#brand').classList.toggle('hide',v!=='map');
   $('#appBtn').classList.toggle('hide',v!=='map');
+  $('#fxBtn').classList.toggle('hide',v!=='map');
   if(v==='hot')renderHot();
   if(v==='all')renderAll();
   if(v!=='map')$('#page-'+v).scrollTop=0;
@@ -1219,6 +1227,55 @@ $('#adminTag').addEventListener('click',function(){saveSession(null);setAdmin(fa
   }
 })();
 
+/* 비바람 효과: 지도 위에 비가 내리고 가끔 번개가 칩니다 (오른쪽 아래 버튼으로 끄고 켤 수 있음) */
+(function(){
+  var cvf=$('#fx'),g=cvf.getContext('2d'),RKEY='gwd_rain_v1',drops=[],fw=0,fh=0,last=performance.now();
+  var saved=null;try{saved=localStorage.getItem(RKEY)}catch(e){}
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var on=saved?saved==='on':!reduce;
+  var flash=0,nextFlash=performance.now()+9000+Math.random()*9000,second=0;
+  function mk(init){var layer=Math.floor(Math.random()*3);
+    return{x:Math.random()*(fw+240)-60,y:init?Math.random()*fh:-40-Math.random()*80,layer:layer,l:9+layer*5+Math.random()*7,v:520+layer*220+Math.random()*260,red:Math.random()<.04}}
+  function size(){
+    var dpr=Math.min(window.devicePixelRatio||1,2);fw=window.innerWidth;fh=window.innerHeight;
+    cvf.width=Math.round(fw*dpr);cvf.height=Math.round(fh*dpr);g.setTransform(dpr,0,0,dpr,0,0);
+    var n=Math.max(60,Math.min(170,Math.round(fw*fh/9000)));
+    while(drops.length<n)drops.push(mk(true));drops.length=n;
+  }
+  size();window.addEventListener('resize',size);
+  var btn=$('#fxBtn');
+  function paint(){btn.classList.toggle('off',!on);btn.setAttribute('aria-pressed',on?'true':'false')}
+  btn.addEventListener('click',function(){on=!on;try{localStorage.setItem(RKEY,on?'on':'off')}catch(e){}paint()});
+  paint();
+  var ALPHA=[.14,.22,.32];
+  function frame(now){
+    requestAnimationFrame(frame);
+    var dt=Math.min(.05,(now-last)/1000);last=now;
+    g.clearRect(0,0,fw,fh);
+    if(!on||view!=='map'||document.hidden)return;
+    var t=now/1000,ang=.30+.12*Math.sin(t*.35)+.05*Math.sin(t*1.3);   // 바람에 따라 기울기가 흔들림
+    var dx=Math.sin(ang),dy=Math.cos(ang),i,d,k;
+    g.lineCap='round';
+    for(k=0;k<3;k++){
+      g.lineWidth=.8+k*.45;g.strokeStyle='rgba(215,205,208,'+ALPHA[k]+')';g.beginPath();
+      for(i=0;i<drops.length;i++){d=drops[i];if(d.layer!==k||d.red)continue;g.moveTo(d.x,d.y);g.lineTo(d.x+dx*d.l,d.y-dy*d.l)}
+      g.stroke();
+    }
+    g.lineWidth=1.6;g.strokeStyle='rgba(200,25,40,.38)';g.beginPath();   // 가끔 붉은 빗줄기
+    for(i=0;i<drops.length;i++){d=drops[i];if(!d.red)continue;g.moveTo(d.x,d.y);g.lineTo(d.x+dx*d.l,d.y-dy*d.l)}
+    g.stroke();
+    for(i=0;i<drops.length;i++){
+      d=drops[i];d.x-=dx*d.v*dt;d.y+=dy*d.v*dt;
+      if(d.y>fh+30||d.x<-80){var n=mk(false);d.x=Math.random()*(fw+240)-60+60;d.y=n.y;d.l=n.l;d.v=n.v;d.layer=n.layer;d.red=n.red}
+    }
+    // 번개: 드물게(15~30초 간격), 약하게, 짧게 (깜빡임이 빠르게 반복되지 않도록 제한)
+    if(now>=nextFlash){flash=1;second=Math.random()<.5?now+170:0;nextFlash=now+15000+Math.random()*15000}
+    if(second&&now>=second){flash=.8;second=0}
+    if(flash>0.01){g.fillStyle='rgba(235,225,232,'+(.10*flash).toFixed(3)+')';g.fillRect(0,0,fw,fh);flash-=dt*3.2}
+  }
+  requestAnimationFrame(frame);
+})();
+
 /* 독자 프로그램(어둠 유형 검사): 아이콘을 누르면 창 안에서 실행 */
 function openApp(){
   var fr=$('#appFrame');
@@ -1243,6 +1300,7 @@ function applyLang(){
   $('#langLbl').textContent=lang==='ko'?'日本語':'한국어';
   $('#langBtn').setAttribute('aria-label',tt('langAria'));
   adminLabel();
+  $('#fxBtn').setAttribute('aria-label',tt('fxName'));
   fillRegions($('#allRegion'),F.c,true);fillRegions($('#wRegion'),WS.c,false);
   renderCats();renderAllCats();refreshLists();
   if($('#detail').classList.contains('on')){renderDetail();autoTranslate(byId(curId))}
